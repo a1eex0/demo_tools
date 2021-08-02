@@ -60,15 +60,15 @@ class Main_GUI():
 		j_1 = json.loads(r.text[6:])[0]
 		j_2 = json.loads(j_1[2])
 		j_3 = j_2[1][0][0]
-		j_4 = json.dumps(j_3,ensure_ascii=False).split(',')
+		j_4 = json.dumps(j_3,ensure_ascii=False).split('"')
 		# 拼音
-		py_data = j_4[1].split('"')[1]
+		py_data = j_4[1]
 		self.result_text.delete('1.0','end')
 		self.result_text.insert(END,'\n')
 		self.result_text.insert(END,py_data)
 		self.result_text.insert(END,'\n\n')
 		# 中文
-		zw_data = j_4[5].split('"')[1]
+		zw_data = j_4[5]
 		self.result_text.insert(END,zw_data)
 
 if __name__ == '__main__':
