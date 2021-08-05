@@ -39,7 +39,9 @@ class Main_GUI():
 
 	# 弹窗函数
 	def Message(self):
-		tkinter.messagebox.showinfo('google translate auto to zh-CN by alee','这是一个调用Google翻译API的小程序。\n\n只有一个功能：自动检测语言，并翻译成中文。\n\n目前仅支持单词和长句的翻译！')
+		tkinter.messagebox.showinfo('google translate auto to zh-CN by alee','''这是一个调用Google翻译API的小程序。
+只有一个功能：自动检测语言，并翻译成中文。
+目前不支持单词多排查找，支持单个查询及长句翻译！''')
 
 	def Clear(self):
 		self.entry_text.delete('1.0','end')
@@ -47,29 +49,33 @@ class Main_GUI():
 
 	# 翻译函数
 	def Translate(self):
-		gt_url = 'https://translate.google.cn/_/TranslateWebserverUi/data/batchexecute'
-		headers = {'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}
-
-		text = self.entry_text.get('0.0','end').replace('\n', ' ').replace('\r', ' ')
-
-		req = "[[[\"MkEWBc\",\"[[\\\""+text+"\\\",\\\"auto\\\",\\\"zh-CN\\\",true],[null]]\",null,\"generic\"]]]"
-		req = urllib.parse.quote(req.encode("utf-8"))
-		data = "f.req="+req
-		r = requests.post(url=gt_url,data=data,headers=headers)
-		# 格式化处理
-		j_1 = json.loads(r.text[6:])[0]
-		j_2 = json.loads(j_1[2])
-		j_3 = j_2[1][0][0]
-		j_4 = json.dumps(j_3,ensure_ascii=False).split('"')
-		# 拼音
-		py_data = j_4[1]
 		self.result_text.delete('1.0','end')
 		self.result_text.insert(END,'\n')
-		self.result_text.insert(END,py_data)
-		self.result_text.insert(END,'\n\n')
-		# 中文
-		zw_data = j_4[5]
-		self.result_text.insert(END,zw_data)
+		gt_url = 'https://translate.google.cn/_/TranslateWebserverUi/data/batchexecute'
+		headers = {'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'}
+		
+		text = self.entry_text.get('0.0','end').replace('\n', ' ').replace('\r', ' ')
+		sentences = text.split('. ')
+
+		for i in sentences:
+			if len(i) == 0:
+				break
+			i = i+'.'
+			req = "[[[\"MkEWBc\",\"[[\\\""+i+"\\\",\\\"auto\\\",\\\"zh-CN\\\",true],[null]]\",null,\"generic\"]]]"
+			req = urllib.parse.quote(req.encode("utf-8"))
+			data = "f.req="+req
+			r = requests.post(url=gt_url,data=data,headers=headers)
+			# 格式化处理
+			j_1 = json.loads(r.text[6:])[0]
+			j_2 = json.loads(j_1[2])
+			j_3 = j_2[1][0][0]
+			j_4 = json.dumps(j_3,ensure_ascii=False).split('"')
+			# # 拼音
+			# py_data = j_4[1]
+			# self.result_text.insert(END,py_data+'\n')
+			# 中文
+			zw_data = j_4[5]
+			self.result_text.insert(END,zw_data+'\n')
 
 if __name__ == '__main__':
 	window = Tk()
